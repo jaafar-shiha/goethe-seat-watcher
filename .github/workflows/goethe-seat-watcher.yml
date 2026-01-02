@@ -1,0 +1,65 @@
+name: Goethe Seat Watcher
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Restore watcher state cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: watcher/state.json
+          key: goethe-watcher-state-
+          restore-keys: |
+            goethe-watcher-state-
+
+      - name: Ensure state file exists
+        run: |
+          mkdir -p watcher
+          if [ ! -f watcher/state.json ]; then
+            echo "{}" > watcher/state.json
+          fi
+
+      - name: Install dependencies
+        run: |
+          cd watcher
+          npm ci --ignore-scripts
+
+      - name: Run watcher
+        run: |
+          cd watcher
+          node check.js
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_FROM: ${{ secrets.ALERT_FROM }}
+          ALERT_RECIPIENTS: ${{ secrets.ALERT_RECIPIENTS }}
+
+      - name: Hash state
+        id: statehash
+        run: |
+          if [ -f watcher/state.json ]; then
+            echo "hash=$(sha256sum watcher/state.json | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          else
+            echo "hash=empty" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Save watcher state cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: watcher/state.json
+          key: goethe-watcher-state-${{ steps.statehash.outputs.hash }}
+
