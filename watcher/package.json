@@ -1,0 +1,9 @@
+{
+  "name": "goethe-watcher",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "check": "node check.js"
+  }
+}
