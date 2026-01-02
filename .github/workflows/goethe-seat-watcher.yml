@@ -46,6 +46,7 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           ALERT_FROM: ${{ secrets.ALERT_FROM }}
           ALERT_RECIPIENTS: ${{ secrets.ALERT_RECIPIENTS }}
+          TEST_FORCE_MOCK: ${{ secrets.TEST_FORCE_MOCK }}
 
       - name: Hash state
         id: statehash
