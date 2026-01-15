@@ -14,7 +14,7 @@ Automated availability checker for Goethe-Institut exam bookings (Goethe-Zertifi
 ### 1. Fork or Clone
 
 ```bash
-git clone https://github.com/<your-username>/goethe-seat-watcher.git
+git clone https://github.com/jaafar-shiha/goethe-seat-watcher.git
 cd goethe-seat-watcher
 ```
 
